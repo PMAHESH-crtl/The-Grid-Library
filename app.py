@@ -3,22 +3,26 @@ import pandas as pd
 from datetime import datetime
 import uuid
 
+# ---------------------------------------------------
+# PAGE CONFIG
+# ---------------------------------------------------
+
 st.set_page_config(
     page_title="THE GRID LIBRARY",
     layout="wide"
 )
 
 # ---------------------------------------------------
-# CUSTOM STYLING
+# CUSTOM CSS
 # ---------------------------------------------------
 
 st.markdown("""
 <style>
 
 html, body, [class*="css"] {
-    font-family: 'Segoe UI', sans-serif;
     background-color: #0f0f0f;
     color: white;
+    font-family: 'Segoe UI', sans-serif;
 }
 
 .main-title {
@@ -42,15 +46,11 @@ html, body, [class*="css"] {
     border-radius: 25px;
     box-shadow: 0px 8px 25px rgba(212,175,55,0.2);
     margin-bottom: 30px;
-    transition: 0.3s;
+    border: 1px solid #2a2a2a;
 }
 
 .product-card:hover {
-    transform: scale(1.02);
-}
-
-.product-image img {
-    border-radius: 20px;
+    transform: scale(1.01);
 }
 
 .price {
@@ -58,23 +58,7 @@ html, body, [class*="css"] {
     font-weight: bold;
     color: #d4af37;
     margin-top: 10px;
-}
-
-.buy-btn {
-    background: #d4af37;
-    color: black;
-    padding: 14px;
-    border-radius: 12px;
-    text-align: center;
-    font-size: 18px;
-    font-weight: bold;
-    text-decoration: none;
-    display: block;
-    margin-top: 15px;
-}
-
-.buy-btn:hover {
-    background: white;
+    margin-bottom: 15px;
 }
 
 .receipt-box {
@@ -88,6 +72,7 @@ footer {
     text-align:center;
     margin-top:40px;
     color:gray;
+    padding:20px;
 }
 
 </style>
@@ -155,6 +140,8 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+st.divider()
+
 # ---------------------------------------------------
 # PRODUCTS DISPLAY
 # ---------------------------------------------------
@@ -167,11 +154,7 @@ for index, product in enumerate(products):
 
         st.markdown("<div class='product-card'>", unsafe_allow_html=True)
 
-        st.markdown("<div class='product-image'>", unsafe_allow_html=True)
-
         st.image(product["image"])
-
-        st.markdown("</div>", unsafe_allow_html=True)
 
         st.subheader(product["name"])
 
@@ -192,24 +175,30 @@ for index, product in enumerate(products):
             key=f"mobile_{index}"
         )
 
-        # REPLACE WITH YOUR REAL RAZORPAY LINK
-razorpay_link = "https://rzp.io/l/YOUR_PAYMENT_LINK"
+        # ---------------------------------------------------
+        # RAZORPAY PAYMENT LINK
+        # ---------------------------------------------------
 
-st.markdown(
-    f"""
-    <a href="{razorpay_link}" target="_blank">
-        <div class='buy-btn'>
-            Buy Now
-        </div>
-    </a>
-    """,
-    unsafe_allow_html=True
-)
+        payment_link = "https://rzp.io/l/YOUR_REAL_LINK"
+
+        st.link_button(
+            f"Buy {product['name']}",
+            payment_link,
+            use_container_width=True
+        )
+
+        # ---------------------------------------------------
+        # TRANSACTION INPUT
+        # ---------------------------------------------------
 
         transaction_id = st.text_input(
-            "Enter Razorpay Payment ID",
+            "Enter Razorpay Transaction ID",
             key=f"txn_{index}"
         )
+
+        # ---------------------------------------------------
+        # RECEIPT GENERATION
+        # ---------------------------------------------------
 
         if st.button(
             f"Generate Receipt",
@@ -221,7 +210,7 @@ st.markdown(
             receipt = {
                 "Order ID": order_id,
                 "Customer": customer_name,
-                "Mobile": customer_mobile,
+                "Customer Mobile": customer_mobile,
                 "Transaction ID": transaction_id,
                 "Product": product["name"],
                 "Amount": product["price"],
