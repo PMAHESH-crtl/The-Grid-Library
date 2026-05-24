@@ -226,7 +226,7 @@ export default function TheGridLibrary() {
               onClick={() => setShowPaymentModal(false)}
               className="absolute top-4 right-4 text-2xl font-bold text-gray-600 hover:text-black"
             >
-              ×
+              *
             </button>
 
             <h2 className="text-3xl font-bold text-center mb-4">
