@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-st.set_page_config(page_title="Admin Dashboard")
+st.set_page_config(page_title="ADMIN DASHBOARD")
 
 st.title("THE GRID LIBRARY - ADMIN")
 
