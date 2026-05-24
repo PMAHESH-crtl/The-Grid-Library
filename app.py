@@ -193,18 +193,18 @@ for index, product in enumerate(products):
         )
 
         # REPLACE WITH YOUR REAL RAZORPAY LINK
-        razorpay_link = "https://rzp.io/rzp/Ru34I3K"
+razorpay_link = "https://rzp.io/l/YOUR_PAYMENT_LINK"
 
-        st.markdown(
-            f"""
-            <a href="{razorpay_link}" target="_blank">
-                <div class='buy-btn'>
-                    Buy Now
-                </div>
-            </a>
-            """,
-            unsafe_allow_html=True
-        )
+st.markdown(
+    f"""
+    <a href="{razorpay_link}" target="_blank">
+        <div class='buy-btn'>
+            Buy Now
+        </div>
+    </a>
+    """,
+    unsafe_allow_html=True
+)
 
         transaction_id = st.text_input(
             "Enter Razorpay Payment ID",
