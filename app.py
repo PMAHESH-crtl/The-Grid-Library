@@ -3,11 +3,15 @@ import pandas as pd
 from datetime import datetime
 import uuid
 
+# PAGE CONFIG
 st.set_page_config(page_title="THE GRID LIBRARY", layout="wide")
 
-# LOAD CSS
-with open("style.css") as f:
-    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+# LOAD CSS (Optional)
+try:
+    with open("style.css") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+except FileNotFoundError:
+    st.warning("style.css not found. Using default styling.")
 
 # BUSINESS DETAILS
 BUSINESS_NAME = "THE GRID LIBRARY"
@@ -44,38 +48,37 @@ products = [
 
 # HEADER
 st.markdown(
-    f\"\"\"
-    <div class='main-title'>{BUSINESS_NAME}</div>
-    <div class='subtitle'>
-        Premium Photo Frames <br>
-        📞 {PHONE} | 📧 {EMAIL}
+    f"""
+    <div style="text-align:center;">
+        <h1>{BUSINESS_NAME}</h1>
+        <h4>
+            Premium Photo Frames<br>
+            📞 {PHONE} | 📧 {EMAIL}
+        </h4>
     </div>
-    \"\"\",
+    """,
     unsafe_allow_html=True
 )
 
 st.divider()
 
-# PRODUCTS DISPLAY
+# DISPLAY PRODUCTS
 cols = st.columns(2)
 
 for index, product in enumerate(products):
 
     with cols[index % 2]:
 
-        st.markdown("<div class='card'>", unsafe_allow_html=True)
-
-        st.image(product["image"])
+        st.image(product["image"], use_container_width=True)
 
         st.subheader(product["name"])
-
         st.write(f"Category: {product['category']}")
-
         st.markdown(
-            f"<div class='price'>₹ {product['price']}</div>",
+            f"<h3>₹ {product['price']}</h3>",
             unsafe_allow_html=True
         )
 
+        # CUSTOMER DETAILS
         customer_name = st.text_input(
             "Customer Name",
             key=f"name_{index}"
@@ -86,11 +89,11 @@ for index, product in enumerate(products):
             key=f"mobile_{index}"
         )
 
-        # RAZORPAY PAYMENT BUTTON
+        # PAYMENT BUTTON
         razorpay_link = "https://rzp.io/l/YOUR_PAYMENT_LINK"
 
         st.markdown(
-            f'''
+            f"""
             <a href="{razorpay_link}" target="_blank">
                 <button style="
                     background:black;
@@ -105,47 +108,52 @@ for index, product in enumerate(products):
                     Buy Now
                 </button>
             </a>
-            ''',
+            """,
             unsafe_allow_html=True
         )
 
+        # PAYMENT ID INPUT
         transaction_id = st.text_input(
             "Enter Razorpay Payment ID",
             key=f"txn_{index}"
         )
 
+        # GENERATE RECEIPT
         if st.button(
-            f"Generate Receipt {product['name']}",
+            f"Generate Receipt - {product['name']}",
             key=f"receipt_{index}"
         ):
 
-            order_id = str(uuid.uuid4())[:8]
+            if not customer_name or not customer_mobile or not transaction_id:
+                st.error("Please fill all details before generating receipt.")
+            else:
+                order_id = str(uuid.uuid4())[:8]
 
-            receipt = {
-                "Order ID": order_id,
-                "Customer": customer_name,
-                "Mobile": customer_mobile,
-                "Transaction ID": transaction_id,
-                "Product": product["name"],
-                "Amount": product["price"],
-                "Seller": "PAKALA MAHESH",
-                "Seller Mobile": PHONE,
-                "Time": str(datetime.now())
-            }
+                receipt = {
+                    "Order ID": order_id,
+                    "Customer": customer_name,
+                    "Mobile": customer_mobile,
+                    "Transaction ID": transaction_id,
+                    "Product": product["name"],
+                    "Amount": product["price"],
+                    "Seller": "PAKALA MAHESH",
+                    "Seller Mobile": PHONE,
+                    "Time": str(datetime.now())
+                }
 
-            df = pd.DataFrame([receipt])
+                df = pd.DataFrame([receipt])
 
-            st.success("Payment Receipt Generated")
+                st.success("Payment Receipt Generated Successfully")
 
-            st.dataframe(df)
+                st.dataframe(df)
 
-            csv = df.to_csv(index=False)
+                csv = df.to_csv(index=False)
 
-            st.download_button(
-                "Download Receipt",
-                csv,
-                file_name=f"{order_id}.csv",
-                mime="text/csv"
-            )
+                st.download_button(
+                    label="Download Receipt",
+                    data=csv,
+                    file_name=f"{order_id}.csv",
+                    mime="text/csv"
+                )
 
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.divider()
